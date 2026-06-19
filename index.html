@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>홍콩여행</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:100%; background:#fff; overflow:hidden; }
+.stage {
+position:absolute; top:50%; left:50%;
+transform:translate(-50%,-50%);
+width:1700px; height:952px;
+transform-origin:center center;}
+.layer { position:absolute; }
+.layer img { width:100%; display:block; -webkit-user-drag:none; user-select:none; }
+.title { left:-680px;  top:30px;  width:1600px; }
+.map   { left:-8px;   top:769px; width:3000px; }
+.right { left:750px; top:30px; width:1600px; }
+.arrow  { left:380px; top:300px; width:1600px; }
+.dial {position:absolute; left:100px; top:70px; width:1500px;
+transform-origin:50.1% 48.3%;
+cursor:grab; z-index:1; will-change:transform;}
+.dial.grabbing { cursor:grabbing; }
+.dial img { width:100%; display:block; pointer-events:none; -webkit-user-drag:none; user-select:none; }
+.dial.returning { transition:transform .9s cubic-bezier(.34,1.4,.5,1); }
+.center-logo { position:absolute; left: 486px; top:278.5px; width:740px; z-index:2; pointer-events:none; }
+.center-logo img { width:100%; display:block; }
+.pin { position:absolute; left:312px; top:306px; width:1470px; z-index:3; pointer-events:none; }
+.pin img { width:100%; display:block; }
+
+
+</style>
+</head>
+<body>
+<div class="stage">
+<div class="layer title">
+<img src="left.png" alt="香港旅游">
+</div>
+<div class="layer arrow">
+<img src="arrow.png" alt="멤버 이름">
+</div>
+<div class="layer right">
+<img src="right.png" alt="멤버 이름">
+</div>
+<div class="dial">
+<img src="dial.png" alt="다이얼">
+</div>
+<div class="center-logo">
+<img src="middlelogo.png" alt="중앙 로고">
+</div>
+<div class="pin">
+<img src="pin.png" alt="핀">
+</div>
+</div>
+
+
+<script>
+(function(){
+const stage=document.querySelector('.stage');
+const BW=1700,BH=952;
+function fit(){ const s=Math.min(innerWidth/BW,innerHeight/BH); stage.style.transform='translate(-50%,-50%) scale('+s+')'; }
+addEventListener('resize',fit); fit();
+const dial=document.querySelector('.dial');
+const TRIGGER=250, REACH_MARGIN=8, LIMIT=300;
+let dragging=false,startA=0,rot=0;
+function ang(e){
+const r=dial.getBoundingClientRect();
+const cx=r.left+r.width*0.501, cy=r.top+r.height*0.483;
+const x=(e.touches?e.touches[0].clientX:e.clientX)-cx;
+const y=(e.touches?e.touches[0].clientY:e.clientY)-cy;
+return Math.atan2(y,x)*180/Math.PI;
+  }
+function down(e){ e.preventDefault(); dragging=true; dial.classList.add('grabbing'); dial.classList.remove('returning'); startA=ang(e)-rot; }
+function move(e){
+if(!dragging)return; e.preventDefault();
+let d=ang(e)-startA;
+while(d-rot>180)d-=360; while(d-rot<-180)d+=360;
+if(d<0)d=0; if(d>LIMIT)d=LIMIT;
+rot=d; dial.style.transform='rotate('+rot+'deg)';
+if(rot>=TRIGGER-REACH_MARGIN){
+dragging=false; dial.classList.remove('grabbing');
+dial.classList.add('returning');
+dial.style.transform='rotate(0deg)'; rot=0;
+setTimeout(function(){ location.href='next.html'; },700);
+}
+  }
+function up(){
+if(!dragging)return; dragging=false; dial.classList.remove('grabbing');
+dial.classList.add('returning'); dial.style.transform='rotate(0deg)'; rot=0;
+  }
+dial.addEventListener('mousedown',down);
+addEventListener('mousemove',move);
+addEventListener('mouseup',up);
+dial.addEventListener('touchstart',down,{passive:false});
+addEventListener('touchmove',move,{passive:false});
+addEventListener('touchend',up);
+})();
+</script>
+</body>
+</html>
