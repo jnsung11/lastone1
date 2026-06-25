@@ -14,78 +14,100 @@ width:1700px; height:952px;
 transform-origin:center center;}
 .layer { position:absolute; }
 .layer img { width:100%; display:block; -webkit-user-drag:none; user-select:none; }
-.dial {position:absolute; left:460px; top: 80px; width: 770px;
-transform-origin:50.1% 48.3%;
-cursor:grab; z-index:1; will-change:transform;}
+.dial {position:absolute; left:456px; top:76.2px; width:800px;
+transform-origin:50% 50%;
+cursor:grab; z-index:1; will-change:transform;
+touch-action:none;}
 .dial.grabbing { cursor:grabbing; }
 .dial img { width:100%; display:block; pointer-events:none; -webkit-user-drag:none; user-select:none; }
 .dial.returning { transition:transform .9s cubic-bezier(.34,1.4,.5,1); }
-.center-logo { position:absolute; left: 659.2px; top:280px; width:372.5px; z-index:2; pointer-events:none; }
+.center-logo { position:absolute; left:669.70px; top:290.11px; width:372.5px; z-index:2; pointer-events:none; }
 .center-logo img { width:100%; display:block; }
 .pin { position:absolute; left:1010px; top:720px; width:110px; z-index:3; pointer-events:none; }
 .pin img { width:100%; display:block; }
-
 </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="layer arrow">
-      <img src="background.png" alt="배경">
-  </div>
-  <div class="layer dial">
-    <img src="dial.png" alt="다이얼">
-  </div>
-  <div class="center-logo">
-    <img src="middlelogo.png" alt="중앙 로고">
-  </div>
-  <div class="pin">
-    <img src="pin.png" alt="핀">
-  </div>
+<div class="stage">
+<div class="layer arrow">
+<img src="background.png" alt="배경">
+</div>
+<div class="layer dial">
+<img src="dial.png" alt="다이얼">
+</div>
+<div class="center-logo">
+<img src="middlelogo.png" alt="중앙 로고">
+</div>
+<div class="pin">
+<img src="pin.png" alt="핀">
 </div>
 </div>
-
+</div>
 
 <script>
 (function(){
 const stage=document.querySelector('.stage');
 const BW=1700,BH=952;
-function fit(){ const s=Math.min(innerWidth/BW,innerHeight/BH); stage.style.transform='translate(-50%,-50%) scale('+s+')'; }
+let scale=1;
+function fit(){ scale=Math.min(innerWidth/BW,innerHeight/BH); stage.style.transform='translate(-50%,-50%) scale('+scale+')'; }
 addEventListener('resize',fit); fit();
+
 const dial=document.querySelector('.dial');
-const TRIGGER=250, REACH_MARGIN=8, LIMIT=300;
-let dragging=false,startA=0,rot=0;
-function ang(e){
+const TRIGGER=100, LIMIT=300;
+
+let dragging=false, startA=0, rot=0, fired=false;
+
+// 다이얼의 화면상 중심 좌표 (회전 영향 안 받는 부모 기준으로 계산)
+function center(){
 const r=dial.getBoundingClientRect();
-const cx=r.left+r.width*0.501, cy=r.top+r.height*0.483;
-const x=(e.touches?e.touches[0].clientX:e.clientX)-cx;
-const y=(e.touches?e.touches[0].clientY:e.clientY)-cy;
+return { cx:r.left+r.width/2, cy:r.top+r.height/2 };
+}
+function ang(e,c){
+const x=(e.touches?e.touches[0].clientX:e.clientX)-c.cx;
+const y=(e.touches?e.touches[0].clientY:e.clientY)-c.cy;
 return Math.atan2(y,x)*180/Math.PI;
-  }
-function down(e){ e.preventDefault(); dragging=true; dial.classList.add('grabbing'); dial.classList.remove('returning'); startA=ang(e)-rot; }
+}
+
+let c=null;
+function down(e){
+if(fired)return;
+e.preventDefault();
+dragging=true;
+dial.classList.add('grabbing');
+dial.classList.remove('returning');
+c=center();
+startA=ang(e,c)-rot;   // 현재 회전값 기준으로 잡은 각도 고정
+}
 function move(e){
-if(!dragging)return; e.preventDefault();
-let d=ang(e)-startA;
-while(d-rot>180)d-=360; while(d-rot<-180)d+=360;
+if(!dragging||fired)return; e.preventDefault();
+let d=ang(e,c)-startA;
+// 각도 점프(±180 경계) 보정
+while(d-rot>180)d-=360;
+while(d-rot<-180)d+=360;
 if(d<0)d=0; if(d>LIMIT)d=LIMIT;
-rot=d; dial.style.transform='rotate('+rot+'deg)';
-if(rot>=TRIGGER-REACH_MARGIN){
-dragging=false; dial.classList.remove('grabbing');
+rot=d;
+dial.style.transform='rotate('+rot+'deg)';
+if(rot>=TRIGGER){
+fired=true;
+dragging=false;
+dial.classList.remove('grabbing');
 dial.classList.add('returning');
 dial.style.transform='rotate(0deg)'; rot=0;
 setTimeout(function(){ location.href='next.html'; },700);
 }
-  }
+}
 function up(){
-if(!dragging)return; dragging=false; dial.classList.remove('grabbing');
-dial.classList.add('returning'); dial.style.transform='rotate(0deg)'; rot=0;
-  }
-dial.addEventListener('mousedown',down);
+if(!dragging||fired)return;
+dragging=false;
+dial.classList.remove('grabbing');
+dial.classList.add('returning');
+dial.style.transform='rotate(0deg)'; rot=0;
+}
+addEventListener('mousedown',down);
 addEventListener('mousemove',move);
 addEventListener('mouseup',up);
-dial.addEventListener('touchstart',down,{passive:false});
+addEventListener('touchstart',down,{passive:false});
 addEventListener('touchmove',move,{passive:false});
 addEventListener('touchend',up);
 })();
 </script>
-</body>
-</html>
