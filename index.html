@@ -57,8 +57,7 @@ const TRIGGER=100, LIMIT=300;
 
 let dragging=false, startA=0, rot=0, fired=false;
 
-// 다이얼의 화면상 중심 좌표 (회전 영향 안 받는 부모 기준으로 계산)
-function center(){
+\function center(){
 const r=dial.getBoundingClientRect();
 return { cx:r.left+r.width/2, cy:r.top+r.height/2 };
 }
@@ -76,13 +75,12 @@ dragging=true;
 dial.classList.add('grabbing');
 dial.classList.remove('returning');
 c=center();
-startA=ang(e,c)-rot;   // 현재 회전값 기준으로 잡은 각도 고정
+startA=ang(e,c)-rot;  \
 }
 function move(e){
 if(!dragging||fired)return; e.preventDefault();
 let d=ang(e,c)-startA;
-// 각도 점프(±180 경계) 보정
-while(d-rot>180)d-=360;
+\while(d-rot>180)d-=360;
 while(d-rot<-180)d+=360;
 if(d<0)d=0; if(d>LIMIT)d=LIMIT;
 rot=d;
