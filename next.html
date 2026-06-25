@@ -1,21 +1,1296 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        .layer { position:absolute; }
-        .map   { left:-8px;   top:px; width:300px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香港旅游 — 친구에게 물어본 홍콩 여행</title>
+<style>
+@font-face{
+  font-family:'SchoolSafetyGoodSupport';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumR.woff2') format('woff2');
+  font-weight:400;
+}
+@font-face{
+  font-family:'SchoolSafetyGoodSupport';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBareondotumB.woff2') format('woff2');
+  font-weight:700;
+}
+@font-face{
+  font-family:'SweiSansCJKtc';
+  src:url('https://cdn.jsdelivr.net/gh/max32002/swei-sans@2.102/WebFont/CJK%20TC/SweiSansCJKtc-Regular.woff2') format('woff2');
+  font-weight:400;
+}
+@font-face{
+  font-family:'SweiSansCJKtc';
+  src:url('https://cdn.jsdelivr.net/gh/max32002/swei-sans@2.102/WebFont/CJK%20TC/SweiSansCJKtc-Bold.woff2') format('woff2');
+  font-weight:700;
+}
 
+:root{
+  --green:#19b45b;
+  --magenta:#f7008d;
+  --ink:#0d2b1a;
+  --paper:#ffffff;
+  --line:#19b45b;
+  --faint:rgba(25,180,91,.16);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+html,body{height:100%;}
+body{
+  background:var(--paper);
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  color:var(--green);
+  overflow:hidden;
+}
+
+.han{font-family:'SweiSansCJKtc','Heiti TC','黑體-繁',sans-serif;}
+
+.marquee{
+  position:fixed; top:0; left:0; right:0;
+  height:24px; background:var(--paper);
+  border-bottom:1px solid var(--faint);
+  overflow:hidden; z-index:700;
+}
+.track{
+  position:absolute; top:0; white-space:nowrap;
+  line-height:24px; font-size:9px; font-weight:400;
+  color:var(--green); letter-spacing:.20em;
+  animation:scroll 42s linear infinite;
+}
+.track .dot{color:var(--magenta); margin:0 24px; opacity:.6;}
+@keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+.cardstage{
+  position:fixed; top:24px; left: -100px;;
+  width:460px; height:1560px;
+  transform-origin:top left; z-index:300;
+}
+.card{
+  position:absolute; left:0; width:850px; cursor:pointer;
+  /* 데카곤 외곽선보다 살짝 바깥 — 카드(외곽선)가 잘리지 않도록 여유 */
+  clip-path:polygon(
+    68% 0.5%, 73.26% 21.90%, 78.70% 51.00%, 73.26% 80.10%,
+    59.01% 98.08%, 41.39% 98.08%, 27.14% 80.10%, 21.70% 51.00%,
+    19.14% 21.90%, 41.39% 3.92%
+  );
+  transform:translateX(-150px);
+  transform-origin:left center;
+  transition:transform .45s cubic-bezier(.22,.61,.36,1);
+}
+.card img{display:block; width:100%; pointer-events:none;}
+.card:hover{transform:translateX(-70px);}
+.card.active{transform:translateX(150px);}
+.card.active:hover{transform:translateX(-30px);}
+
+.cardstage.tucked .card{
+  transform:translateX(-470px) !important;
+}
+.cardstage.tucked .card:nth-child(1){transition-delay:0s;}
+.cardstage.tucked .card:nth-child(2){transition-delay:.015s;}
+.cardstage.tucked .card:nth-child(3){transition-delay:.03s;}
+.cardstage.tucked .card:nth-child(4){transition-delay:.045s;}
+.cardstage.tucked .card:nth-child(5){transition-delay:.06s;}
+.cardstage.tucked .card:nth-child(6){transition-delay:.075s;}
+.cardstage.tucked .card:nth-child(7){transition-delay:.09s;}
+.cardstage.tucked .card:nth-child(8){transition-delay:.105s;}
+.cardstage.tucked .card:nth-child(9){transition-delay:.12s;}
+.cardstage.tucked .card:nth-child(10){transition-delay:.135s;}
+.cardstage.tucked .card:nth-child(11){transition-delay:.15s;}
+.cardstage.tucked .card:nth-child(12){transition-delay:.165s;}
+.cardstage .card:nth-child(12){transition-delay:0s;}
+.cardstage .card:nth-child(11){transition-delay:.015s;}
+.cardstage .card:nth-child(10){transition-delay:.03s;}
+.cardstage .card:nth-child(9){transition-delay:.045s;}
+.cardstage .card:nth-child(8){transition-delay:.06s;}
+.cardstage .card:nth-child(7){transition-delay:.075s;}
+.cardstage .card:nth-child(6){transition-delay:.09s;}
+.cardstage .card:nth-child(5){transition-delay:.105s;}
+.cardstage .card:nth-child(4){transition-delay:.12s;}
+.cardstage .card:nth-child(3){transition-delay:.135s;}
+.cardstage .card:nth-child(2){transition-delay:.15s;}
+.cardstage .card:nth-child(1){transition-delay:.165s;}
+
+#edgezone{
+  position:fixed; top:24px; left:0; bottom:0;
+  width:100px; z-index:280;
+}
+#divider{
+  position:fixed; top:24px; bottom:0; left:300px;
+  width:1px; background:var(--magenta);
+  z-index:290; opacity:0; pointer-events:none;
+  transition:opacity .4s;
+}
+body.cards-out #divider{ opacity:1; }
+.card:nth-child(1){z-index:1;}  .card:nth-child(2){z-index:2;}
+.card:nth-child(3){z-index:3;}  .card:nth-child(4){z-index:4;}
+.card:nth-child(5){z-index:5;}  .card:nth-child(6){z-index:6;}
+.card:nth-child(7){z-index:7;}  .card:nth-child(8){z-index:8;}
+.card:nth-child(9){z-index:9;}  .card:nth-child(10){z-index:10;}
+.card:nth-child(11){z-index:11;}.card:nth-child(12){z-index:12;}
+
+
+.panel{
+  position:fixed;
+  top:24px; bottom:0;
+  left:0; right:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  z-index:200;
+  scroll-behavior:smooth;
+}
+#stage{
+  width:1700px;
+  transform-origin:top left;
+  transition:transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.panel{ scrollbar-width:none; }
+.panel::-webkit-scrollbar{width:0; height:0;}
+
+.vbar{
+  position:fixed;
+  right:9px;
+  width:5px;
+  z-index:650;
+  background:transparent;
+  opacity:0;
+  transition:opacity .3s;
+  pointer-events:none;
+}
+.vbar.show{opacity:1;}
+.vbar .vthumb{
+  position:absolute;
+  left:0; width:5px;
+  background:var(--green);
+
+.herospace{
+  position:relative;
+  width:1700px; height:560px;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 16px, var(--faint) 16px 17px);
+  border-bottom:1px solid var(--faint);
+  overflow:hidden;
+}
+.herospace > img{
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.herospace .ph-label{
+  position:absolute; left:24px; top:20px;
+  font-size:10px; letter-spacing:.20em; font-weight:400;
+  color:var(--magenta); background:var(--paper); padding:5px 11px; z-index:2;
+}
+.herospace .ph-label.gif-label{color:var(--green);}
+.herospace .ph-count{
+  position:absolute; right:24px; bottom:18px;
+  font-size:10px; letter-spacing:.16em; color:var(--green);
+  background:var(--paper); padding:5px 11px; z-index:2;
+}
+.eyebrow{
+  position:relative; z-index:1;
+  margin:14px 0 0 64px;
+  font-size:11px; font-weight:400; letter-spacing:.24em;
+  color:var(--green);
+  display:inline-flex; align-items:center; gap:14px;
+  background:var(--paper); padding:7px 16px 7px 14px;
+  pointer-events:auto;
+}
+.eyebrow .han{color:var(--magenta); letter-spacing:.10em;}
+.eyebrow::before{
+  content:""; width:40px; height:1px; background:var(--magenta); display:inline-block;
+}
+
+.contentwrap{
+  background:var(--paper);
+  position:relative; z-index:1;
+  width:1700px;
+  padding:54px 64px 180px 64px;
+}
+
+.hero{display:none;}
+
+.belowhero{
+  display:block;
+}
+.belowhero .titleblock .tb-idx{
+  font-size:11px; letter-spacing:.16em; color:var(--green);
+  margin-bottom:16px;
+}
+.belowhero .titleblock h1{
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  font-size:46px; font-weight:700;
+  color:var(--magenta); line-height:1.12; letter-spacing:-.01em;
+}
+.belowhero .titleblock h1 .han{color:var(--green); display:block; font-size:.62em; margin-top:.18em;}
+
+.detailblock .dt-head{
+  font-size:13px; font-weight:700; color:var(--green);
+  letter-spacing:.04em; margin-bottom:10px;
+}
+.detailtable{
+  width:100%; border-collapse:collapse; margin-bottom:22px;
+}
+.detailtable tr{ border-top:1px solid var(--faint); }
+.detailtable tr:last-child{ border-bottom:1px solid var(--faint); }
+.detailtable th{
+  text-align:left; vertical-align:top;
+  padding:9px 14px 9px 0; width:34%;
+  font-size:12px; font-weight:400; color:var(--magenta);
+  letter-spacing:.06em;
+}
+.detailtable td{
+  padding:9px 0; font-size:12px; font-weight:400;
+  color:var(--green); line-height:1.55;
+}
+.detailtable td .han{ color:var(--green); }
+
+.detailblock .lead{
+  font-size:13px; line-height:1.9; color:var(--ink);
+  margin-bottom:15px;
+}
+.detailblock .lead:last-child{margin-bottom:0;}
+
+.rec{
+  border:1.5px solid var(--magenta);
+  padding:20px 22px 18px;
+  position:relative;
+  background:var(--paper);
+}
+.rec .rec-tag{
+  font-size:10px; letter-spacing:.22em; font-weight:400;
+  color:var(--magenta); margin-bottom:12px;
+  display:flex; align-items:center; gap:9px;
+}
+.rec .rec-tag::before{
+  content:"●"; color:var(--magenta); font-size:8px;
+  animation:recblink 1.6s ease-in-out infinite;
+}
+@keyframes recblink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+.rec h3.rec-title{
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  font-size:19px; font-weight:700; color:var(--green);
+  line-height:1.4; margin-bottom:14px; letter-spacing:-.01em;
+}
+.rec .rec-quote{
+  font-size:13px; line-height:1.95; color:var(--ink);
+  margin-bottom:18px;
+}
+.rec .rec-player{
+  display:flex; align-items:center; gap:14px;
+  border-top:1px solid var(--faint); padding-top:15px;
+  cursor:pointer; user-select:none;
+}
+.rec .rec-play{
+  flex:0 0 auto; width:34px; height:34px;
+  border:1.5px solid var(--magenta); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s;
+}
+.rec .rec-play svg{ display:block; }
+.rec .rec-player:hover .rec-play{ background:rgba(247,0,141,.10); }
+.rec .rec-wave{
+  flex:1 1 auto; height:30px;
+  background-repeat:no-repeat; background-position:left center;
+  background-size:auto 100%;
+  opacity:.85;
+}
+.rec .rec-time{
+  flex:0 0 auto; font-size:11px; letter-spacing:.06em;
+  color:var(--magenta);
+}
+.rec.playing .rec-play{ background:var(--magenta); }
+.rec.playing .rec-play svg path{ fill:var(--paper); }
+.belowhero .detailblock .rec, .detailblock > .rec{ margin-top:4px; }
+.lead-col .rec{ margin-bottom:30px; }
+.col-side .detailtable{ margin-bottom:22px; }
+
+.rec.sticker{
+  position:absolute;
+  right:24px; bottom:20px;
+  width:330px; max-width:38vw;
+  z-index:60;
+  box-shadow:6px 6px 0 rgba(25,180,91,.14);
+}
+.rec.sticker .rec-title{ font-size:15px; margin-bottom:10px; }
+.rec.sticker .rec-quote{
+  font-size:11px; line-height:1.7; margin-bottom:13px;
+  max-height:84px; overflow:hidden;
+}
+.rec.sticker .rec-play{ width:28px; height:28px; }
+
+.flow{
+  margin-top:56px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+.flow .col-main{ width:760px; flex:0 0 760px; }
+.flow .col-side{
+  width:330px; flex:0 0 330px;
+  border-left:1.5px solid var(--line);
+  padding-left:24px;
+}
+.kicker{
+  font-size:10px; letter-spacing:.22em; font-weight:400;
+  color:var(--magenta); margin-bottom:13px;
+}
+.flow p{
+  font-size:14px; line-height:1.9; color:var(--ink);
+  margin-bottom:17px; font-weight:400;
+}
+.flow p:last-child{margin-bottom:0;}
+
+.photo{
+  width:100%; aspect-ratio:4/3; margin:4px 0 20px;
+  border:1.5px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 11px, var(--faint) 11px 12px);
+}
+.photo.wide{aspect-ratio:16/9;}
+.photo .ph-label{
+  position:absolute; left:10px; top:9px;
+  font-size:9px; letter-spacing:.16em; font-weight:400;
+  color:var(--magenta); background:var(--paper); padding:3px 7px;
+}
+.photo .ph-label.gif-label{color:var(--green);}
+
+.tk{
+  color:var(--magenta); font-weight:700; cursor:pointer;
+  border-bottom:1px dotted var(--magenta); padding-bottom:1px;
+  transition:background .2s;
+}
+.tk:hover{background:rgba(247,0,141,.10);}
+
+.col-side h4{
+  font-size:12px; letter-spacing:.12em; font-weight:700;
+  color:var(--magenta); margin:24px 0 10px;
+}
+.col-side h4:first-child{margin-top:0;}
+.col-side .note{font-size:13px; line-height:1.75; color:var(--ink);}
+.facts{list-style:none; margin-top:2px;}
+.facts li{
+  display:flex; justify-content:space-between; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--faint);
+  font-size:13px; line-height:1.4;
+}
+.facts li:first-child{border-top:1px solid var(--faint);}
+.facts .fk{color:var(--magenta); font-weight:700; flex:0 0 auto;}
+.facts .fv{color:var(--green); text-align:right; font-weight:400;}
+
+.quote{
+  margin:56px 0 0; padding:30px 0;
+  border-top:1.5px solid var(--line);
+  border-bottom:1.5px solid var(--line);
+}
+.quote .q-ko{
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  font-size:23px; line-height:1.55;
+  color:var(--green); font-weight:700; max-width:760px;
+}
+.quote .q-ko em{color:var(--magenta); font-style:normal;}
+.quote .q-by{
+  margin-top:15px; font-size:11px; letter-spacing:.16em;
+  font-weight:400; color:var(--magenta);
+}
+
+.pageindex{
+  margin-top:56px; padding-top:16px;
+  border-top:1px solid var(--faint);
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:11px; letter-spacing:.14em; font-weight:400; color:var(--magenta);
+}
+.pageindex .pg{color:var(--green);}
+
+.contentwrap-b{
+  width:1700px;
+  padding:46px 64px 180px 64px;
+}
+.head-b{ padding-top:0; }
+.head-b .eyebrow{
+  position:static; padding:0; margin-bottom:14px;
+}
+.head-b h1{
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  font-size:50px; font-weight:700;
+  color:var(--magenta); line-height:1.12; letter-spacing:-.01em;
+}
+.head-b h1 .han{color:var(--green); margin-left:.15em;}
+.head-b .subline{
+  margin-top:16px; font-size:15px; font-weight:400; line-height:1.7;
+  color:var(--green); max-width:560px;
+}
+.metastrip{
+  margin-top:30px;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  border-top:1.5px solid var(--line); border-bottom:1.5px solid var(--line);
+}
+.metastrip .cell{ padding:13px 18px 13px 0; border-right:1px solid var(--faint); }
+.metastrip .cell:last-child{border-right:none;}
+.metastrip .k{
+  font-size:10px; letter-spacing:.20em; font-weight:400;
+  color:var(--magenta); margin-bottom:6px;
+}
+.metastrip .v{font-size:14px; font-weight:700; color:var(--green); line-height:1.4;}
+.metastrip .v .han{font-weight:400; font-size:12px;}
+.body-b{
+  margin-top:64px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+.body-b .lead-col{ width:820px; flex:0 0 820px; }
+.body-b .side-col{
+  width:340px; flex:0 0 340px;
+  border-left:1.5px solid var(--line);
+  padding-left:24px;
+}
+.body-b p{
+  font-size:15px; line-height:1.85; color:var(--ink);
+  margin-bottom:18px; font-weight:400;
+}
+.body-b p:last-child{margin-bottom:0;}
+
+.popover{
+  position:fixed; inset:0; z-index:800;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(13,43,26,.30); backdrop-filter:blur(2px);
+}
+.popover.show{display:flex;}
+.pop-card{
+  width:min(440px,86vw); background:var(--paper);
+  border:1.5px solid var(--line);
+  padding:30px 30px 26px; position:relative;
+  box-shadow:14px 14px 0 rgba(25,180,91,.14);
+}
+.pop-card .pop-tag{
+  font-size:10px; letter-spacing:.22em; font-weight:400;
+  color:var(--magenta); margin-bottom:12px;
+}
+.pop-card h3{
+  font-family:'SweiSansCJKtc',sans-serif;
+  font-size:24px; color:var(--green); margin-bottom:14px; line-height:1.2;
+}
+.pop-card h3 .sub{
+  font-family:'SchoolSafetyGoodSupport',sans-serif;
+  font-size:13px; display:block; color:var(--magenta);
+  margin-top:5px; letter-spacing:.06em; font-weight:400;
+}
+.pop-card p{font-size:14px; line-height:1.8; color:var(--ink);}
+.pop-card .pop-close{
+  position:absolute; top:14px; right:16px;
+  font-size:20px; font-weight:700; color:var(--magenta);
+  cursor:pointer; line-height:1; background:none; border:none;
+}
+.pop-card .pop-close:hover{color:var(--green);}
+
+@media (max-width:900px){
+  body{overflow:auto;}
+  .cardstage{display:none;}
+  #herobg{ position:relative; top:0; height:42vh; }
+  .panel{left:0; right:0; position:static; overflow:visible; top:0;}
+  .herospace{display:none;}
+  .eyebrow{padding:18px 20px 0; }
+  .contentwrap{padding:24px 20px 14vh;}
+  .contentwrap-b{padding:46px 20px 14vh;}
+  .belowhero{grid-template-columns:1fr; row-gap:26px;}
+  .flow{grid-template-columns:1fr; row-gap:34px;}
+  .flow .col-side{grid-column:1; border-left:none; border-top:1.5px solid var(--line); padding-left:0; padding-top:22px;}
+  .metastrip{grid-template-columns:1fr;}
+  .metastrip .cell{border-right:none; border-bottom:1px solid var(--faint);}
+  .body-b{grid-template-columns:1fr; row-gap:34px;}
+  .body-b .side-col{grid-column:1; border-left:none; border-top:1.5px solid var(--line); padding-left:0; padding-top:22px;}
+  .rec.sticker{position:relative; right:auto; bottom:auto; width:auto; max-width:none; box-shadow:none; margin-top:14px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .track{animation:none;}
+  .card{transition:none;}
+  .panel{scroll-behavior:auto;}
+}
+</style>
+<style>.rec .rec-wave{background-image:url('data:image/png;base64,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');}</style>
 </head>
-
-
 <body>
-    <div class="layer map">
-<img src="next.png" alt="香港旅游">
+<div class="marquee">
+  <div class="track">
+    <span>HONGKONG TRIP</span><span class="dot">·</span>
+    <span class="han">香港旅游</span><span class="dot">·</span>
+    <span>2026年 6月 26日 — 6月 29日</span><span class="dot">·</span>
+    <span class="han">告诉我的人 高宗善</span><span class="dot">·</span>
+    <span>3박 4일 친구 추천 여행</span><span class="dot">·</span>
+    <span>FRIEND-SOURCED GUIDE</span><span class="dot">·</span>
+    <span>HONGKONG TRIP</span><span class="dot">·</span>
+    <span class="han">香港旅游</span><span class="dot">·</span>
+    <span>2026年 6月 26日 — 6月 29日</span><span class="dot">·</span>
+    <span class="han">告诉我的人 高宗善</span><span class="dot">·</span>
+    <span>3박 4일 친구 추천 여행</span><span class="dot">·</span>
+    <span>FRIEND-SOURCED GUIDE</span><span class="dot">·</span>
+  </div>
 </div>
+
+<div class="cardstage" id="cardstage">
+  <div class="card active" style="top:0px;"    onclick="openCard(1)"><img src="Card 1.png"  alt="1"></div>
+  <div class="card"        style="top:120px;"  onclick="openCard(2)"><img src="Card 2.png"  alt="2"></div>
+  <div class="card"        style="top:240px;"  onclick="openCard(3)"><img src="Card 3.png"  alt="3"></div>
+  <div class="card"        style="top:360px;"  onclick="openCard(4)"><img src="Card 4.png"  alt="4"></div>
+  <div class="card"        style="top:480px;"  onclick="openCard(5)"><img src="Card 5.png"  alt="5"></div>
+  <div class="card"        style="top:600px;"  onclick="openCard(6)"><img src="Card 6.png"  alt="6"></div>
+  <div class="card"        style="top:720px;"  onclick="openCard(7)"><img src="Card 7.png"  alt="7"></div>
+  <div class="card"        style="top:840px;"  onclick="openCard(8)"><img src="Card 8.png"  alt="8"></div>
+  <div class="card"        style="top:960px;"  onclick="openCard(9)"><img src="Card 9.png"  alt="9"></div>
+  <div class="card"        style="top:1080px;" onclick="openCard(10)"><img src="Card 10.png" alt="10"></div>
+  <div class="card"        style="top:1200px;" onclick="openCard(11)"><img src="Card 11.png" alt="11"></div>
+  <div class="card"        style="top:1320px;" onclick="openCard(12)"><img src="Card 12.png" alt="12"></div>
+</div>
+
+<div id="edgezone"></div>
+
+<div id="divider"></div>
+
+<div class="vbar" id="vbar"><div class="vthumb" id="vthumb"></div></div>
+
+<div class="panel" id="panel">
+<div id="stage">
+  <article class="doc show" data-card="1">
+    <div class="eyebrow" data-herolabel="메인 이미지 자리" data-herogif="0" data-herocount="(1/12)">통화 기록 No.01 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 01 / 12</div>
+        <h1>웹페이지 설명 <span class="han">网页描述</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="1" data-dur="0:48">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"고종선과의 통화"</h3>
+        <p class="rec-quote">카드 하나에 한 가지씩 정리해 놨으니까, 왼쪽 거 눌러 가면서 보면 돼. 사진 들어갈 자리는 비워 놨고, 3번부터가 진짜 여행 얘기야.</p>
+        <div class="rec-player" onclick="toggleRec(1)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:48</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">차례 — Index</div>
+        <p>이 페이지는 한 통의 긴 통화를 받아 적은 것이다. 친구가 기억나는 순서대로 들려준 홍콩을, 카드 한 장에 한 주제씩 정리했다. 왼쪽 카드를 누르면 주제가 바뀐다.</p>
+      </div>
+      <div class="col-side">
+        <h4>읽는 법</h4>
+        <table class="detailtable">
+          <tr><th>형식</th><td>친구와의 통화 기록</td></tr>
+          <tr><th>구성</th><td>카드 한 장에 한 주제</td></tr>
+          <tr><th>여행</th><td>2026 · 6 · 26 — 6 · 29 / 3박 4일</td></tr>
+        </table>
+        <h4>카드 목록</h4>
+        <ul class="facts">
+          <li><span class="fk">01</span><span class="fv">웹페이지 설명</span></li>
+          <li><span class="fk">02</span><span class="fv">홍콩 기본 정보</span></li>
+          <li><span class="fk">03</span><span class="fv">익청빌딩</span></li>
+          <li><span class="fk">04</span><span class="fv">홍콩 사람들</span></li>
+          <li><span class="fk">05</span><span class="fv">피크트램</span></li>
+          <li><span class="fk">06</span><span class="fv">차찬탱</span></li>
+          <li><span class="fk">07</span><span class="fv">에스컬레이터</span></li>
+          <li><span class="fk">08</span><span class="fv">옥토퍼스 카드</span></li>
+          <li><span class="fk">09</span><span class="fv">호텔 야찐</span></li>
+          <li><span class="fk">10</span><span class="fv">제니 쿠키</span></li>
+          <li><span class="fk">11</span><span class="fv">VLT 레몬티</span></li>
+          <li><span class="fk">12</span><span class="fv">문 타이 익스프레스</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">香港 · 通话记录</span><span>01 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="2">
+    <div class="eyebrow" data-herolabel="메인 이미지 자리 — 홍콩 도심" data-herogif="0" data-herocount="(2/12)">통화 기록 No.02 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 02 / 12</div>
+        <h1>홍콩 기본 정보 <span class="han">香港基本资料</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="2" data-dur="1:05">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"가기 전에 이 정도만 알고 가면 돼."</h3>
+        <p class="rec-quote">홍콩 작아도 사람 진짜 많고 빽빽해. 근데 교통이 촘촘해서 차 없어도 다 다녀. 옥토퍼스 한 장이면 거의 다 되는데, 오래된 가게는 현금만 받는 데가 꽤 있으니까 현금도 좀 챙겨. 6월 말이면 덥고 습하고 소나기 오고, 실내는 에어컨 빵빵하니까 얇은 겉옷 하나 챙겨.</p>
+        <div class="rec-player" onclick="toggleRec(2)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">1:05</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">미리 알아둘 것 — Before you go</div>
+        <p>홍콩은 작지만 밀도가 높은 도시다. 섬(홍콩섬)과 구룡반도가 바다를 사이에 두고 마주 보고 있고, 그 사이를 지하철(MTR)·트램·버스·페리가 촘촘히 잇는다. 대중교통만 잘 쓰면 차 없이도 거의 모든 곳에 갈 수 있다.</p>
+        <p>결제는 <span class="tk" onclick="pop('octopus2')">옥토퍼스 카드</span> 한 장이면 대부분 해결된다. 다만 오래된 로컬 식당, 노점, 일부 기념품 가게는 여전히 현금만 받는 곳이 많으니 소액 현금을 늘 지니는 편이 안전하다.</p>
+        <p>6월 말은 덥고 습하며 소나기가 잦은 계절이다. 실내 냉방은 강한 편이라 얇은 겉옷을 한 장 챙기면 좋다.</p>
+      </div>
+      <div class="col-side">
+        <h4>기본 정보</h4>
+        <table class="detailtable">
+          <tr><th>화폐</th><td>홍콩달러 (HKD) · 1 HKD ≈ 180원 안팎</td></tr>
+          <tr><th>시차</th><td>한국보다 −1시간</td></tr>
+          <tr><th>언어</th><td>광둥어 · 영어 · 표준중국어</td></tr>
+          <tr><th>전압</th><td>220V · BF형 3구</td></tr>
+        </table>
+        <h4>여행 메모</h4>
+        <ul class="facts">
+          <li><span class="fk">팁</span><span class="fv">대체로 불필요</span></li>
+          <li><span class="fk">교통</span><span class="fv">MTR·트램·버스·페리</span></li>
+          <li><span class="fk">결제</span><span class="fv">옥토퍼스 + 현금</span></li>
+        </ul>
+        <h4>날씨 / 6월 말</h4>
+        <p class="note">평균 28–32℃, 습도 높음. 우산 또는 얇은 우비, 그리고 냉방 대비 겉옷 한 장.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">香港 · 通话记录</span><span>02 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="3">
+    <div class="eyebrow" data-herolabel="GIF 자리 — 익청빌딩 전경" data-herogif="1" data-herocount="(3/12)">통화 기록 No.03 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 03 / 12</div>
+        <h1>익청빌딩 <span class="han">益昌大廈</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="3" data-dur="0:52">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"다른 데선 못 보는, 건물이 빽빽하게 들어찬 그 모습이 제일 기억에 남아."</h3>
+        <p class="rec-quote">딴 나라에선 진짜 못 봐. 건물이 그렇게 빽빽하게 들어찬 거. 익청빌딩이 딱 그거야. 안뜰 들어가서 위로 올려다보면 사방이 다 건물이야. 트랜스포머에도 나온 데라 사람들이 많이 알더라고. 근데 실제로 사람 사는 데니까 조용히 보고 빨리 나오는 게 예의야.</p>
+        <div class="rec-player" onclick="toggleRec(3)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:52</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">왜 가는가 — Why here</div>
+        <p>익청빌딩은 홍콩섬 콰리베이(Quarry Bay)에 위치한 주거용 복합 건물로, 일반 주거 건물이라고 할 수 있다. 익청·익팟 등 다섯 동이 'E'자 모양으로 이어져 있고, 1960년대에 지어졌으며 약 1만 명에 가까운 주민이 살고 있다고 알려져 있다. 사방이 빽빽한 건물로 둘러싸여 있는 모습이 홍콩의 <span class="tk" onclick="pop('monster')">고밀도 주거 현실</span>을 잘 보여 주는 관광 명소라고 할 수 있다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 트랜스포머 장면</span></div>
+        <p>영화 『트랜스포머: 사라진 시대』에 나온 장면으로 유명해지기도 했다. (이후 『공각기동대』 촬영지로도 알려졌다.)</p>
+      </div>
+      <div class="col-side">
+        <h4>방문 정보</h4>
+        <table class="detailtable">
+          <tr><th>위치</th><td>콰리베이 King's Road 1046 · MTR 타이쿠역 도보 약 10분</td></tr>
+          <tr><th>유형</th><td>실제 거주 아파트 단지</td></tr>
+          <tr><th>별명</th><td>몬스터 빌딩</td></tr>
+          <tr><th>입장료</th><td>없음</td></tr>
+        </table>
+        <h4>방문 정보</h4>
+        <ul class="facts">
+          <li><span class="fk">가는 길</span><span class="fv">타이쿠역 B출구</span></li>
+          <li><span class="fk">포토존</span><span class="fv">중앙 안뜰</span></li>
+          <li><span class="fk">추천 시간</span><span class="fv">빛 좋은 한낮</span></li>
+        </ul>
+        <h4>⚠ 주의</h4>
+        <p class="note">실제 주민이 사는 곳이다. 주민 사생활 보호를 위해 촬영이 제한될 수 있으니, 조용히 그리고 빠르게 둘러보는 것이 예의다.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">益昌大廈 · 通话记录</span><span>03 / 12</span></div>
+  </div>
+  </article>
+  <article class="doc" data-card="4">
+    <div class="eyebrow" data-herolabel="GIF 자리 — 홍콩 거리" data-herogif="1" data-herocount="(4/12)">통화 기록 No.04 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 04 / 12</div>
+        <h1>홍콩 사람들 <span class="han">香港人</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="4" data-dur="1:12">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"사람들이 좀 차가운 줄 알았는데, 알고 보면 정 많아."</h3>
+        <p class="rec-quote">식당이고 공항이고 호텔이고, 솔직히 막 친절하다는 느낌은 못 받았어. 근데 그게 불친절한 게 아니라 다들 빠르고 효율적인 거더라고. 차찬탱 같은 데 가면 주문하자마자 음식 나오고 바로 일어나야 돼. 근데 일단 자기 사람으로 받아들이면 엄청 잘해줘. 단골 되니까 사장님이 슬쩍 더 얹어 주고 그러더라.</p>
+        <div class="rec-player" onclick="toggleRec(4)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">1:12</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">왜 그럴까 — Why</div>
+        <p>홍콩은 좁은 땅에 많은 사람이 빠르게 움직이는 도시다. 회전율이 생명인 로컬 식당, 늘 붐비는 대중교통, 분초를 다투는 도심 생활이 몸에 배어 있어, 군더더기 없는 응대가 기본값처럼 자리 잡았다. 그래서 처음에는 무뚝뚝하거나 사무적으로 느껴지기 쉽다. 무례하다기보다 그들은 바쁜쪽에 가깝다. 특히 <span class="tk" onclick="pop('cct')">차찬탱</span> 같은 곳은 주문과 동시에 음식이 나오고 바로 자리를 비워 주는 문화라, 그 리듬에 맞춰 주는 편이 서로 편하다.</p>
+        <p>하지만 홍콩 사람들은 내 사람의 바운더리에 들게 되면 매우 잘해준다. 자기 사람으로 받아들인 상대에게는 의리 있고 살뜰하게 챙기는 정 많은 면모가 있다. 단골이 되거나 몇 마디 광둥어·영어로 마음을 트면, 데면데면하던 사장님이 갑자기 음식을 더 얹어 주는 식의 따뜻함을 만나게 된다. 겉은 시크하지만 속은 다정한, 그런 결의 사람들이라고 생각하면 된다.</p>
+      </div>
+      <div class="col-side">
+        <h4>첫인상</h4>
+        <table class="detailtable">
+          <tr><th>주문</th><td>메뉴 미리 정하기</td></tr>
+          <tr><th>속도</th><td>빠른 응대가 기본</td></tr>
+          <tr><th>대화</th><td>짧게, 분명하게</td></tr>
+        </table>
+        <h4>현지 매너 팁</h4>
+        <ul class="facts">
+          <li><span class="fk">합석</span><span class="fv">붐비면 자연스러움</span></li>
+          <li><span class="fk">친절</span><span class="fv">그들은 바쁠 뿐이다.</span></li>
+        </ul>
+        <h4>마음가짐</h4>
+        <p class="note">홍콩의 분주함을 만끽하자</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">香港人 · 通话记录</span><span>04 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="5">
+    <div class="eyebrow" data-herolabel="메인 이미지 자리 — 피크트램 / 풍경" data-herogif="0" data-herocount="(5/12)">통화 기록 No.05 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 05 / 12</div>
+        <h1>피크트램 <span class="han">山頂纜車</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="5" data-dur="1:03">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"트램 안에서 밖에 홍콩 풍경 보는 게 진짜 이국적이야."</h3>
+        <p class="rec-quote">피크트램 타고 올라가는데, 창밖으로 보이는 마천루가 막 기울어져 보여. 그게 진짜 이국적이더라고. 올라갈 때 오른쪽 창가에 앉아. 그래야 잘 보여. 해 질 때쯤 맞춰서 올라가면 야경까지 봐서 더 좋고. 아, 트램이든 지하철이든 안에서 뭐 먹는 건 안 되니까 조심해.</p>
+        <div class="rec-player" onclick="toggleRec(5)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">1:03</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">타는 법 — Riding it</div>
+        <p>피크트램은 세계에서 가장 오래된 케이블 철도 중 하나로, 해발 약 28m에서 396m까지 한 번에 올라간다. 현재 운행 중인 차량은 2022년부터 도입된 6세대다. 탑승장은 센트럴역과 애드미럴티역 사이(Garden Road)에 있고, 도보로 10분쯤 올라가면 된다.</p>
+        <p>한번 탈 때의 가격은 성인 편도 약 HK$68, 왕복 약 HK$88 정도이며, 이는 한국 돈으로 환산하면 왕복 1만 6천 원 안팎이다. <span class="tk" onclick="pop('octopus5')">옥토퍼스 카드</span>로 바로 탭하고 탈 수도 있고, 정상 전망대인 <span class="tk" onclick="pop('skyterrace')">스카이 테라스 428</span> 입장권을 묶은 티켓을 온라인으로 미리 예약하면 줄 서는 시간을 아낄 수 있다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 트램 내부 / 풍경</span></div>
+        <p>꿀팁 하나. 올라갈 때 오른쪽 창가에 앉으면 기울어진 홍콩의 마천루가 한눈에 들어온다. 야경을 노린다면 해 질 무렵에 맞춰 올라가는 일정을 추천한다. 단, 홍콩에서는 대중교통 내에서 어떠한 취식도 허용되지 않는다.</p>
+      </div>
+      <div class="col-side">
+        <h4>요금 · 운행</h4>
+        <table class="detailtable">
+          <tr><th>개통</th><td>1888년 · 130여 년 역사</td></tr>
+          <tr><th>운행</th><td>매일 07:30 – 23:00</td></tr>
+          <tr><th>성인 편도</th><td>약 HK$68</td></tr>
+          <tr><th>성인 왕복</th><td>약 HK$88 (한화 약 1만 6천 원 안팎)</td></tr>
+        </table>
+        <h4>요금 / Fare</h4>
+        <ul class="facts">
+          <li><span class="fk">어린이·경로</span><span class="fv">편도 HK$31</span></li>
+          <li><span class="fk">소요</span><span class="fv">정상까지 5–7분</span></li>
+          <li><span class="fk">결제</span><span class="fv">옥토퍼스·티켓</span></li>
+        </ul>
+        <h4>🚫 취식 금지</h4>
+        <p class="note">트램·MTR 모두 차내 음식·음료 금지. 탑승 전에 정리하자.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">山頂纜車 · 通话记录</span><span>05 / 12</span></div>
+  </div>
+  </article>
+  <article class="doc" data-card="6">
+    <div class="eyebrow" data-herolabel="GIF 자리 — 차찬탱" data-herogif="1" data-herocount="(6/12)">통화 기록 No.06 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 06 / 12</div>
+        <h1>차찬탱 <span class="han">茶餐廳</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="6" data-dur="0:58">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"여기 차찬탱은 홍콩에만 있는 거야."</h3>
+        <p class="rec-quote">차찬탱이 홍콩에만 있는 독특한 식당이야. 영국 음식이랑 광둥식이 섞인 거. 스타킹 밀크티, 버터 토스트, 마카로니 수프 이런 거 팔아. 아침 일찍 열고 회전 빨라서 메뉴 오래 고민하면 안 돼. 내가 갔던 데는 Wah Lok Cafe라고, 거기 진짜 괜찮았어.</p>
+        <div class="rec-player" onclick="toggleRec(6)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:58</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">유래 — Where it comes from</div>
+        <p>2차 대전 이후 홍콩에 영국·미국 문화가 퍼지면서, 그전까지 비싼 양식당에서만 팔던 토스트·파스타·스테이크 같은 서양 음식이 광둥식으로 현지화됐다. 그렇게 우유를 넣은 차, 버터 바른 빵 같은 메뉴를 저렴하게 내놓는 식당들이 1950–60년대에 빠르게 퍼졌고, 그게 오늘날의 차찬탱이다. 그래서 중식 조리법과 서양식 재료가 융합된 독특한 형식을 띠고 있다.</p>
+        <p>차찬탱의 대표 메뉴로는 <span class="tk" onclick="pop('silkmilk')">스타킹 밀크티</span>, 버터 토스트, 마카로니 수프 등이 있다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 스타킹 밀크티 / 버터토스트 / 마카로니 수프</span></div>
+        <p>파는 메뉴는 식당마다 다양하며, 주력으로 미는 메인 메뉴 또한 다양하다. 대개 이른 아침부터 영업을 시작해 아침을 먹는 사람들이 많고, 주문과 동시에 음식이 나오는 만큼 메뉴를 오래 고민하거나 음식을 오래 먹어서 오래 앉아 있으면 안 된다고 한다.</p>
+      </div>
+      <div class="col-side">
+        <h4>대표 메뉴</h4>
+        <table class="detailtable">
+          <tr><th>음료</th><td>스타킹 밀크티</td></tr>
+          <tr><th>빵</th><td>버터 토스트 · 파인애플번</td></tr>
+          <tr><th>식사</th><td>마카로니 수프</td></tr>
+          <tr><th>가격대</th><td>1인 HK$50–100</td></tr>
+        </table>
+        <h4>고종선 PICK</h4>
+        <p class="note"><strong>Wah Lok Cafe (華樂餐廳)</strong> — 친구의 픽. 이번 여행 중에 가봐야겠다. <span class="tk" onclick="pop('wahlok')">위치 보기</span></p>
+        <h4>영업</h4>
+        <ul class="facts">
+          <li><span class="fk">시작</span><span class="fv">이른 아침</span></li>
+          <li><span class="fk">회전</span><span class="fv">빠르게</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">茶餐廳 · 通话记录</span><span>06 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="7">
+    <div class="eyebrow" data-herolabel="GIF 자리 — 미드레벨 에스컬레이터" data-herogif="1" data-herocount="(7/12)">통화 기록 No.07 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 07 / 12</div>
+        <h1>에스컬레이터 <span class="han">扶梯</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="7" data-dur="0:55">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"중경삼림 그 장면, 거기가 바로 이 에스컬레이터야."</h3>
+        <p class="rec-quote">홍콩이 언덕이 많아서 야외 에스컬레이터가 많아. 미드레벨 에스컬레이터가 제일 유명한데, 한국 거보다 훨씬 빨라. 시간대 따라 방향도 바뀌고. 중경삼림에서 왕페이가 타고 올라가는 그 장면 거기야. 소호 쪽 다니려면 어차피 타게 돼. 공짜고.</p>
+        <div class="rec-player" onclick="toggleRec(7)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:55</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">미드레벨 에스컬레이터 — Why famous</div>
+        <p>이러한 에스컬레이터로 유명한 장소는 센트럴에 위치한 미드레벨 에스컬레이터이다. 센트럴의 가파른 언덕 위 미드레벨 주거 지역과 도심을 잇기 위해, 영국령 시절인 1991–93년에 건설됐다. 흥미로운 점은 시간대에 따라 방향이 바뀐다는 것. 출근 시간대(오전)에는 아래로, 그 이후(낮·저녁)에는 위로 운행한다.</p>
+        <p>영화 <span class="tk" onclick="pop('chungking')">『중경삼림』</span> 속 왕페이가 양조위의 집을 올려다보며 에스컬레이터를 타고 가는 장면이, 홍콩 영화를 대표하는 사진일 만큼 상징적이다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 중경삼림 장면</span></div>
+        <p>이는 홍콩에서만 볼 수 있는 독특한 관광지이긴 하지만, 소호(SoHo)·할리우드 로드 일대를 여행하고 돌아다니기 위해선 반드시 탈 수밖에 없다고 한다. 따로 탑승료 같은 건 없다.</p>
+      </div>
+      <div class="col-side">
+        <h4>기본 정보</h4>
+        <table class="detailtable">
+          <tr><th>길이</th><td>약 800m · 세계 최장 옥외</td></tr>
+          <tr><th>구성</th><td>에스컬레이터 20대 + 무빙워크 3대</td></tr>
+          <tr><th>요금</th><td>무료</td></tr>
+        </table>
+        <h4>이용 정보</h4>
+        <ul class="facts">
+          <li><span class="fk">하행</span><span class="fv">오전 6:00–10:00</span></li>
+          <li><span class="fk">상행</span><span class="fv">10:20–24:00</span></li>
+          <li><span class="fk">시작점</span><span class="fv">센트럴 마켓</span></li>
+        </ul>
+        <h4>알뜰 팁</h4>
+        <p class="note">중간 'MTR Fare Saver' 단말기에 옥토퍼스를 찍으면 당일 MTR HK$2 할인.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">扶梯 · 通话记录</span><span>07 / 12</span></div>
+  </div>
+  </article>
+  <article class="doc" data-card="8">
+    <div class="contentwrap-b">
+    <div class="head-b">
+      <div class="eyebrow">통화 기록 No.08 <span class="han">通话记录</span></div>
+      <h1>옥토퍼스 카드 <span class="han">八達通</span></h1>
+      <p class="subline">한국의 T-money와 거의 같은 역할을 하는 교통카드. 단, 이 한 장의 쓰임새가 훨씬 넓다.</p>
+    </div>
+    <div class="body-b">
+      <div class="lead-col">
+        <div class="rec" data-rec="8" data-dur="1:10">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"옥토퍼스는 한국에서 미리 신청해서 공항에서 받아."</h3>
+        <p class="rec-quote">옥토퍼스가 한국 티머니랑 비슷한데 쓰는 데가 훨씬 많아. 교통은 기본이고 편의점, 식당에서도 카드처럼 써. 한국에서 미리 신청해 놓고 공항 도착하자마자 받는 게 편해. 신기한 게 잔액 넘어도 한 번은 더 결제돼. 그담 충전할 때 까여. 이걸로 스타페리 타고 야경 보는 거 꼭 해봐.</p>
+        <div class="rec-player" onclick="toggleRec(8)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">1:10</span>
+        </div>
+      </div>
+        <div class="kicker">한 장이면 끝 — One card</div>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 옥토퍼스 카드</span></div>
+        <p>옥토퍼스 카드는 트램·MTR·버스·스타페리 같은 홍콩 내 거의 모든 대중교통에서 쓸 수 있고, 동시에 편의점·여러 식당과 가게에서 일반 결제 카드처럼도 쓰인다. 물론 받지 않는 매장(대표적으로 <span class="tk" onclick="pop('jenny8')">제니 베이커리</span>)도 있으니, 중요한 구매 전에는 미리 확인하는 게 좋다.</p>
+        <p>고종선은 한국에서 미리 신청해 두고 공항 도착 즉시 수령하는 방식을 추천했다. 충전해서 쓰는 선불 카드지만, T-money와 달리 잔액을 초과해 한 번 더 결제하는 게 가능하다는 점이 특이하다. 초과분은 다음 충전 때 자동으로 차감된다.</p>
+        <p>친구가 특히 권한 건, 옥토퍼스로 <span class="tk" onclick="pop('starferry')">스타페리</span>를 타고 빅토리아 하버의 야경을 보는 것. 단돈 몇 홍콩달러로 배 위에서 양쪽 빌딩 숲의 불빛을 감상할 수 있다. 탑승 시간은 약 10분 정도다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 스타페리 야경</span></div>
+      </div>
+      <div class="side-col">
+        <h4 class="col-side-h4">구매 / 충전</h4>
+        <ul class="facts">
+          <li><span class="fk">사전신청</span><span class="fv">한국 → 공항 수령</span></li>
+          <li><span class="fk">현지</span><span class="fv">공항·MTR역·편의점</span></li>
+          <li><span class="fk">초과결제</span><span class="fv">가능 (다음 충전 차감)</span></li>
+          <li><span class="fk">스타페리</span><span class="fv">평일 약 HK$5</span></li>
+        </ul>
+        <h4>스타페리란</h4>
+        <p class="note">구룡반도와 홍콩섬을 잇는 명물 페리. 약 10분 항해, 현금은 안 되고 옥토퍼스·토큰·QR로 결제.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">八達通 · 通话记录</span><span>08 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="9">
+    <div class="contentwrap-b">
+    <div class="head-b">
+      <div class="eyebrow">통화 기록 No.09 <span class="han">通话记录</span></div>
+      <h1>호텔 야찐 <span class="han">押金</span></h1>
+      <p class="subline">홍콩 호텔에는 '야찐(押金)'이라는 보증금 문화가 있다. 모르고 가면 당황할 수 있으니 꼭 알아두자.</p>
+    </div>
+    <div class="metastrip">
+      <div class="cell"><div class="k">시점</div><div class="v">체크인 시 지불</div></div>
+      <div class="cell"><div class="k">성격</div><div class="v">시설 손상·미니바 대비 보증금</div></div>
+      <div class="cell"><div class="k">환급</div><div class="v">퇴실 후 수 주 소요</div></div>
+    </div>
+    <div class="body-b">
+      <div class="lead-col">
+        <div class="rec" data-rec="9" data-dur="1:01">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"야찐, 이거 모르고 가면 진짜 당황해."</h3>
+        <p class="rec-quote">홍콩 호텔은 체크인할 때 야찐이라고 보증금을 받아. 방 두 개에 한 70만 원 정도 냈었어. 카드로 내면 그 금액이 묶여서 한참 동안 안 풀려. 여행 끝나고 몇 주 지나서야 돌아왔어. 그래서 가능하면 현금으로 내는 게 나아. 여행 자금 좀 넉넉하게 챙겨 가.</p>
+        <div class="rec-player" onclick="toggleRec(9)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">1:01</span>
+        </div>
+      </div>
+        <div class="kicker">보증금이란 — Deposit</div>
+        <p>야찐은 호텔을 대실하고 체크인할 때 대개 지불하게 되는데, 객실 시설 파손이나 미니바 이용 등에 대비해 호텔이 미리 잡아 두는 보증금 정도의 개념으로 이해하면 된다. 가격은 호텔에 따라 천차만별이고, 고종선은 호텔 방 두 개에 약 70만 원 정도의 큰 금액을 야찐으로 지불했다고 한다.</p>
+        <p>카드로 지불하게 될 시에 카드에 지불한 금액은 못 빠져나가게끔 묶인다고 하며, 여행을 다녀온 후 몇 주나 지나고서야 돌려받아서 현금으로 지불하는 것을 추천했다. 카드 한도가 묶이면 여행 중 결제에 영향을 줄 수 있기 때문이다.</p>
+        <p>꽤 큰 금액을 지출하게 될 수 있으므로 여행 자금을 여유롭게 챙겨가도록 해 보자.</p>
+      </div>
+      <div class="side-col">
+        <h4>체크 포인트</h4>
+        <ul class="facts">
+          <li><span class="fk">금액</span><span class="fv">호텔마다 상이</span></li>
+          <li><span class="fk">카드</span><span class="fv">한도 홀드 주의</span></li>
+          <li><span class="fk">현금</span><span class="fv">친구 추천 방식</span></li>
+          <li><span class="fk">환급</span><span class="fv">퇴실 후 몇 주</span></li>
+        </ul>
+        <h4>준비</h4>
+        <p class="note">예비 자금을 넉넉히. 카드 한도도 보증금만큼 여유를 두고 출발하자.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">押金 · 通话记录</span><span>09 / 12</span></div>
+  </div>
+  </article>
+  <article class="doc" data-card="10">
+    <div class="contentwrap-b">
+    <div class="head-b">
+      <div class="eyebrow">통화 기록 No.10 <span class="han">通话记录</span></div>
+      <h1>제니 쿠키 <span class="han">珍妮曲奇</span></h1>
+      <p class="subline">그 유명한 제니 쿠키. 곰돌이 그림 틴케이스로 잘 알려진 홍콩 대표 기념품이다 — 정확히는 <strong>마카다미아 초코맛</strong>이 이번 여행의 핵심이다.</p>
+    </div>
+    <div class="body-b">
+      <div class="lead-col">
+        <div class="rec" data-rec="10" data-dur="0:50">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"마카다미아 초코맛은 홍콩에서만 살 수 있어."</h3>
+        <p class="rec-quote">제니 쿠키 유명하잖아. 근데 일반 쿠키는 쿠팡에서도 직구돼. 마카다미아 초코맛, 그게 홍콩에서만 팔아. 인당 살 수 있는 개수도 정해져 있고. 그리고 거기 현금만 받아, 옥토퍼스도 안 돼. 아침에 여는데 오픈런 해야 넉넉히 사. 사람들 줄 일찍부터 서.</p>
+        <div class="rec-player" onclick="toggleRec(10)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:50</span>
+        </div>
+      </div>
+        <div class="kicker">왜 굳이 현지에서 — Why buy here</div>
+        <p>제니 쿠키는 홍콩에 단 두 곳의 오프라인 매장만 운영하는, 홍콩 대표 기념품이라고 할 수 있다. 하지만 제니 쿠키의 대부분은 쿠팡을 통해 직구할 수 있다. 그런데 마카다미아 초코맛 쿠키는 오로지 홍콩에서만 구매할 수 있다고 하며, 인기 품목이라 인당 구매 수량에 제한이 있는 경우가 많고, 일반 쿠키 역시 인당 일정 개수 이상 구매할 수 없다고 한다. 꼭 알아두자.</p>
+        <p>또 한 가지 중요한 것 — 현지 매장은 현금만 받는다. <span class="tk" onclick="pop('jenny10')">옥토퍼스 카드도 안 된다</span>. 살 계획이라면 현금을 꼭 챙기자.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 제니 쿠키 틴케이스</span></div>
+        <p>제니 쿠키는 아침에 오픈하는데, 보통 사람들은 오픈 전부터 줄을 서 있다고 하니 오픈런에 성공해서 두둑이 사 와 보도록 하자.</p>
+      </div>
+      <div class="side-col">
+        <h4>구매 전 체크</h4>
+        <ul class="facts">
+          <li><span class="fk">매장</span><span class="fv">홍콩 단 2곳</span></li>
+          <li><span class="fk">결제</span><span class="fv">현금만</span></li>
+          <li><span class="fk">한정판</span><span class="fv">마카다미아 초코</span></li>
+          <li><span class="fk">수량</span><span class="fv">인당 제한 있음</span></li>
+        </ul>
+        <h4>침사추이점</h4>
+        <p class="note">오래된 건물 안 좁은 계단으로 올라가는 구조라 찾기 까다롭다. 다녀온 사람의 동선 후기를 미리 보고 가면 좋다.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">珍妮曲奇 · 通话记录</span><span>10 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="11">
+    <div class="contentwrap-b">
+    <div class="head-b">
+      <div class="eyebrow">통화 기록 No.11 <span class="han">通话记录</span></div>
+      <h1>VLT 레몬티 <span class="han">维他柠檬茶</span></h1>
+      <p class="subline">홍콩을 대표하는 국민 레몬티 음료. 'Vita Lemon Tea'를 줄여 흔히 VLT라 부른다.</p>
+    </div>
+    <div class="body-b">
+      <div class="lead-col">
+        <div class="rec" data-rec="11" data-dur="0:42">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"VLT는 차 버전, 오리지널로 사."</h3>
+        <p class="rec-quote">VLT가 홍콩 국민 레몬티야. 편의점이고 마트고 어디나 있고 싸. 맛 여러 갠데, 탄산 말고 그냥 차 버전 오리지널이 제일 나아. 더울 때 딱이야. 한국 올 때 바리바리 싸 왔어.</p>
+        <div class="rec-player" onclick="toggleRec(11)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:42</span>
+        </div>
+      </div>
+        <div class="kicker">국민 음료 — Everyday drink</div>
+        <p>VLT는 홍콩의 대표적인 레몬티 음료수이다. 홍콩 전 지역의 편의점·마트 등에서 구매 가능하며, 가격도 비교적 저렴한 편에 속한다. 더운 홍콩 날씨에 한 손에 들고 다니기 딱 좋은 음료다.</p>
+        <p>맛도 다양하지만 고종선은 탄산 버전이 아닌 차 버전(오리지널)을 추천했다. 적당히 달고 새콤한, 홍콩의 더위와 가장 잘 어울리는 맛이라고. 한국으로 돌아올 때 바리바리 싸 와 봐야겠다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — VLT 음료</span></div>
+      </div>
+      <div class="side-col">
+        <h4>고를 때</h4>
+        <ul class="facts">
+          <li><span class="fk">추천</span><span class="fv">차 버전(오리지널)</span></li>
+          <li><span class="fk">파는 곳</span><span class="fv">편의점·마트</span></li>
+          <li><span class="fk">가격</span><span class="fv">저렴한 편</span></li>
+          <li><span class="fk">결제</span><span class="fv">옥토퍼스 가능</span></li>
+        </ul>
+        <h4>기념품으로</h4>
+        <p class="note">캐리어에 몇 개 챙겨 오면 홍콩의 더위를 한국에서 다시 맛볼 수 있다.</p>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">维他柠檬茶 · 通话记录</span><span>11 / 12</span></div>
+  </div>
+  </article>
+
+  <article class="doc" data-card="12">
+    <div class="eyebrow" data-herolabel="메인 이미지 자리 — 태국 음식" data-herogif="0" data-herocount="(12/12)">통화 기록 No.12 <span class="han">通话记录</span></div>
+    <div class="herospace"></div>
+    <div class="contentwrap">
+<div class="belowhero">
+      <div class="titleblock">
+        <div class="tb-idx">통화 기록 — 12 / 12</div>
+        <h1>문 타이 익스프레스 <span class="han">Moon Thai Express</span></h1>
+      </div>
+      <div class="rec typeA-rec" data-rec="12" data-dur="0:47">
+        <div class="rec-tag">통화 녹음 · RECORDING <span class="han">通话录音</span></div>
+        <h3 class="rec-title">"태국에서 먹은 태국 음식보다 맛있었어."</h3>
+        <p class="rec-quote">공항 안에 문 타이 익스프레스라고 있어. 돌아올 때 시간 애매할 때 거기서 한 끼 때우기 좋아. 진짜 태국에서 먹은 거보다 맛있더라고. 팟타이랑 커리류가 대표 메뉴인 거 같아. 돌아오는 길에 꼭 먹어봐.</p>
+        <div class="rec-player" onclick="toggleRec(12)">
+          <span class="rec-play"><svg width="11" height="13" viewBox="0 0 11 13"><path d="M0 0 L11 6.5 L0 13 Z" fill="#f7008d"/></svg></span>
+          <span class="rec-wave"></span>
+          <span class="rec-time">0:47</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="col-main">
+        <div class="kicker">공항 마지막 한 끼 — Last bite</div>
+        <p>고종선에 의하면 태국에서 먹은 태국 음식보다 맛있었다고 한다. 메뉴 또한 다양한데, 팟타이와 커리류가 대표 메뉴인 듯하다. 돌아오는 길에 꼭 먹어봐야겠다.</p>
+        <div class="photo wide"><span class="ph-label">사진 자리 — 태국 음식</span></div>
+      </div>
+      <div class="col-side">
+        <h4>이용 정보</h4>
+        <table class="detailtable">
+          <tr><th>위치</th><td>홍콩 국제공항 내</td></tr>
+          <tr><th>추천</th><td>팟타이 · 커리류</td></tr>
+          <tr><th>타이밍</th><td>출국 전 한 끼</td></tr>
+        </table>
+        <h4>친구 평</h4>
+        <p class="note">"현지에서 먹은 것보다 맛있었다"</p>
+      </div>
+      <div class="quote">
+        <div class="q-ko">여기까지가 친구가 들려준 홍콩. <em>이제 내가 직접 확인하러 갈 차례다.</em></div>
+        <div class="q-by">2026 · 6 · 26 — 6 · 29 / 3박 4일</div>
+      </div>
+    </div>
+    <div class="pageindex"><span class="pg">Moon Thai Express · 通话记录</span><span>12 / 12</span></div>
+  </div>
+  </article>
+
+</div>
+</div>
+
+<!-- ===== 인포 팝오버 ===== -->
+<div class="popover" id="popover" onclick="if(event.target===this)closePop()">
+  <div class="pop-card">
+    <button class="pop-close" onclick="closePop()" aria-label="닫기">×</button>
+    <div class="pop-tag" id="pop-tag">보충 설명</div>
+    <h3 id="pop-title"></h3>
+    <p id="pop-body"></p>
+  </div>
+</div>
+<style>
+/* 카드 외곽 데카곤 라인은 PNG 자체에 포함됨 */
+/* 소환 시 전체가 살짝 작아짐 — 비례/여백 그대로 유지 (JS scale * SUMMON_SCALE) */
+</style>
+
+<script>
+(function(){
+  document.querySelectorAll('.doc').forEach(function(doc){
+    var space = doc.querySelector('.herospace');
+    var rec = doc.querySelector('.rec.typeA-rec');
+    if(space && rec){
+      rec.classList.add('sticker');
+      space.appendChild(rec);         
+      space.style.pointerEvents = 'none';
+      rec.style.pointerEvents = 'auto';
+    }
+  });
+})();
+
+function openCard(num){
+  var cards = document.getElementsByClassName("card");
+  for(var i=0;i<cards.length;i++){ cards[i].className = "card"; }
+  cards[num-1].className = "card active";
+
+  var docs = document.getElementsByClassName("doc");
+  for(var j=0;j<docs.length;j++){ docs[j].classList.remove("show"); }
+  var doc = document.querySelector('.doc[data-card="'+num+'"]');
+  doc.classList.add("show");
+
+  var space = doc.querySelector(".herospace");
+  var eb    = doc.querySelector(".eyebrow");
+  if(space && !space.dataset.filled){
+    var label = eb ? eb.getAttribute("data-herolabel") : "";
+    var gif   = eb && eb.getAttribute("data-herogif")==="1";
+    var count = eb ? eb.getAttribute("data-herocount") : "";
+    var L = document.createElement("span");
+    L.className = "ph-label" + (gif ? " gif-label" : "");
+    L.textContent = label || "";
+    var C = document.createElement("span");
+    C.className = "ph-count";
+    C.textContent = count || "";
+    space.insertBefore(C, space.firstChild);
+    space.insertBefore(L, space.firstChild);
+    space.dataset.filled = "1";
+  }
+
+  document.getElementById("panel").scrollTop = 0;
+  applyStage();
+  syncScrollbar();
+}
+
+
+var BASE_W = 1700;
+var CARD_COL = 300;        
+var stageEl = document.getElementById("stage");
+var cardsOut = false;
+
+function applyStage(){
+  var winW = window.innerWidth;
+  var base = (winW - 14) / BASE_W;
+  if(base > 1) base = 1;
+  var s, tx;
+  if(cardsOut){
+    var avail = winW - CARD_COL - 14;
+    s = avail / BASE_W;
+    if(s > base) s = base;
+    tx = CARD_COL;
+  } else {
+    s = base;
+    tx = 0;
+  }
+  stageEl.style.transform = "translateX(" + tx + "px) scale(" + s + ")";
+
+  var natural = stageEl.offsetHeight;         
+  stageEl.style.marginBottom = (natural * (s - 1)) + "px";
+}
+
+var cardstage = document.getElementById("cardstage");
+var DESIGN_H = 1560;
+function fitCards(){
+  var avail = window.innerHeight - 24;
+  var s = avail / DESIGN_H;
+  cardstage.style.transform = "scale(" + s + ")";
+}
+
+function fit(){ applyStage(); fitCards(); }
+window.addEventListener("resize", function(){ fit(); syncScrollbar(); });
+
+var tuckTimer = null;
+function tuckCards(on){
+  if(on){
+    cardstage.classList.add("tucked");
+    cardsOut = false;
+    document.body.classList.remove("cards-out");
+  } else {
+    cardstage.classList.remove("tucked");
+    cardsOut = true;
+    document.body.classList.add("cards-out");
+  }
+  applyStage();
+}
+var edge = document.getElementById("edgezone");
+function summon(){ if(tuckTimer){clearTimeout(tuckTimer); tuckTimer=null;} tuckCards(false); }
+function scheduleTuck(){ if(tuckTimer) clearTimeout(tuckTimer); tuckTimer=setTimeout(function(){ tuckCards(true); }, 220); }
+edge.addEventListener("mouseenter", summon);
+cardstage.addEventListener("mouseenter", summon);
+cardstage.addEventListener("mouseleave", scheduleTuck);
+edge.addEventListener("mouseleave", scheduleTuck);
+
+function toggleRec(n){
+  var doc = document.querySelector('.doc[data-card="'+n+'"]');
+  if(!doc) return;
+  var rec = doc.querySelector('.rec[data-rec="'+n+'"]');
+  if(!rec) return;
+  document.querySelectorAll('.rec.playing').forEach(function(r){ if(r!==rec) r.classList.remove('playing'); });
+  rec.classList.toggle('playing');
+}
+
+var panel = document.getElementById("panel");
+var vbar = document.getElementById("vbar");
+var vthumb = document.getElementById("vthumb");
+function syncScrollbar(){
+  var winH = window.innerHeight;
+  var top = 24;
+  var trackH = winH - top - 10;
+  var sh = panel.scrollHeight;
+  var ch = panel.clientHeight;
+  if(sh <= ch + 4){ vbar.classList.remove("show"); return; }
+  vbar.style.top = top + "px";
+  vbar.style.height = trackH + "px";
+  var ratio = ch / sh;
+  var thumbH = Math.max(48, Math.min(trackH * ratio, 120));
+  var maxScroll = sh - ch;
+  var p = panel.scrollTop / maxScroll;
+  var y = p * (trackH - thumbH);
+  vthumb.style.height = thumbH + "px";
+  vthumb.style.top = y + "px";
+}
+panel.addEventListener("scroll", function(){
+  syncScrollbar();
+  vbar.classList.add("show");
+});
+panel.addEventListener("mouseenter", function(){ if(panel.scrollHeight>panel.clientHeight+4) vbar.classList.add("show"); });
+
+openCard(1);
+tuckCards(true);
+fit();
+setTimeout(syncScrollbar, 200);
+
+var POP = {
+  scroll:    {tag:"읽는 법", title:"분홍 단어 = 더보기", sub:"본문 속 토큰", body:"본문 속 분홍색으로 표시된 단어를 누르면 이렇게 짧은 보충 설명이 떠. 모바일에서도 똑같이 동작해."},
+  octopus2:  {tag:"교통·결제", title:"옥토퍼스 카드", sub:"八達通", body:"홍콩의 만능 교통·결제 카드. 자세한 내용은 8번 카드에서 다룬다. 대중교통은 물론 편의점·일부 식당에서도 쓸 수 있어."},
+  monster:   {tag:"별명", title:"몬스터 빌딩", sub:"Monster Building", body:"발코니와 창문이 빽빽하게 겹쳐 보이는 외관 때문에 붙은 별명. 익청·익팟 등 다섯 동이 'E'자로 이어져 거대한 벽처럼 보여."},
+  cct:       {tag:"식당 문화", title:"차찬탱", sub:"茶餐廳", body:"홍콩식 경양식당. 주문하면 바로 음식이 나오고 빠르게 자리를 비워 주는 회전 문화가 있어. 6번 카드에서 자세히 다룬다."},
+  octopus5:  {tag:"결제", title:"옥토퍼스로 탑승", sub:"Tap & go", body:"줄 서서 티켓을 사는 대신 옥토퍼스를 탭하고 바로 탈 수 있어. 다만 가장 싼 요금을 원하면 왕복권을 미리 예약하는 편이 낫다."},
+  skyterrace:{tag:"전망대", title:"스카이 테라스 428", sub:"Sky Terrace 428", body:"빅토리아 피크 정상 피크타워 꼭대기의 전망대. 해발 428m에서 빅토리아 하버를 한눈에 내려다볼 수 있어. 입장은 별도 티켓."},
+  silkmilk:  {tag:"대표 메뉴", title:"스타킹 밀크티", sub:"絲襪奶茶", body:"진한 홍차를 촘촘한 천(스타킹처럼 생긴 면 망)에 여러 번 거르고 연유를 넣어 만드는 홍콩식 밀크티. 부드럽고 진한 단맛이 특징이야."},
+  wahlok:    {tag:"고종선 PICK", title:"Wah Lok Cafe", sub:"華樂餐廳", body:"친구가 직접 추천한 차찬탱. 지도 링크(maps.app.goo.gl/XJLYctS61k4q1FGW7)를 참고해 위치를 확인하면 돼. 이번 여행에 꼭 들러보자."},
+  chungking: {tag:"홍콩 영화", title:"중경삼림", sub:"重慶森林 · 1994", body:"왕가위 감독의 대표작. 왕페이가 미드레벨 에스컬레이터를 타고 양조위의 집을 올려다보는 장면이 홍콩 영화를 상징하는 한 컷으로 남았어."},
+  jenny8:    {tag:"예외", title:"제니 베이커리", sub:"Jenny Bakery", body:"옥토퍼스가 안 되는 대표적인 곳. 현지 매장은 현금만 받아. 자세한 내용은 10번 카드에서."},
+  starferry: {tag:"교통", title:"스타페리", sub:"Star Ferry · 天星小輪", body:"구룡반도와 홍콩섬을 잇는 명물 페리. 약 10분 항해 동안 빅토리아 하버 양쪽의 마천루와 야경을 감상할 수 있어. 평일 성인 약 HK$5."},
+  jenny10:   {tag:"주의", title:"현금만 받음", sub:"Cash only", body:"제니 베이커리 현지 매장은 카드도, 옥토퍼스도 안 된다. 오직 현금. 사 올 계획이라면 넉넉히 현금을 챙겨 가자."},
+};
+function pop(key){
+  var d = POP[key]; if(!d) return;
+  document.getElementById("pop-tag").textContent = d.tag;
+  document.getElementById("pop-title").innerHTML = d.title + (d.sub ? ' <span class="sub">'+d.sub+'</span>' : '');
+  document.getElementById("pop-body").textContent = d.body;
+  document.getElementById("popover").classList.add("show");
+}
+function closePop(){ document.getElementById("popover").classList.remove("show"); }
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closePop(); });
+</script>
+
 </body>
 </html>
